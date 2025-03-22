@@ -1,0 +1,25 @@
+import os
+import pandas as pd
+from natsort import natsorted
+
+source_folder = "/home/anisa_bakiu/Downloads/Versamenti_TASI"
+output_file = os.path.join(source_folder, "Merged_TASI_versamenti.xlsx")
+
+files = [f for f in os.listdir(source_folder) if f.startswith("Versamenti") and f.endswith(".xlsx")]
+files = natsorted(files)  # Sort numerically (not alphabetically)
+
+merged_v = pd.DataFrame()
+
+for i, file in enumerate(files):
+    file_path = os.path.join(source_folder, file)
+    
+    df = pd.read_excel(file_path)
+
+    if i == 0:
+        merged_v = df 
+    else:
+        merged_v = pd.concat([merged_v, df], ignore_index=True)  
+
+merged_v.to_excel(output_file, index=False)
+
+print(f"Merging completed! Saved as {output_file}")
