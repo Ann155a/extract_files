@@ -1,25 +1,27 @@
 import os
-import pandas as pd
-from natsort import natsorted
+import shutil
 
-source_folder = "/home/anisa_bakiu/Downloads/Versamenti_TASI"
-output_file = os.path.join(source_folder, "Merged_TASI_versamenti.xlsx")
+parent_dir = "/home/anisa_bakiu/Downloads/allC_Flussi_TASI"
+destination_dir = "/home/anisa_bakiu/Downloads/Versamenti_TASI"
 
-files = [f for f in os.listdir(source_folder) if f.startswith("Versamenti") and f.endswith(".xlsx")]
-files = natsorted(files)  # Sort numerically (not alphabetically)
+os.makedirs(destination_dir, exist_ok=True)
 
-merged_v = pd.DataFrame()
+counter = 1
 
-for i, file in enumerate(files):
-    file_path = os.path.join(source_folder, file)
+for folder in os.listdir(parent_dir):
+    folder_path = os.path.join(parent_dir, folder)
     
-    df = pd.read_excel(file_path)
+    if os.path.isdir(folder_path):
+        for file in os.listdir(folder_path):
+            if "Versamenti.xlsx" in file:
+                file_path = os.path.join(folder_path, file)
+                
+                new_filename = f"Versamenti{counter}.xlsx"
+                new_file_path = os.path.join(destination_dir, new_filename)
 
-    if i == 0:
-        merged_v = df  
-    else:
-        merged_v = pd.concat([merged_v, df], ignore_index=True)  
+                shutil.copy(file_path, new_file_path)  # Copy file
+                print(f"Copied: {file_path} → {new_file_path}")
 
-merged_v.to_excel(output_file, index=False)
+                counter += 1  
 
-print(f"Merging completed! Saved as {output_file}")
+print("Extraction and renaming completed!")
